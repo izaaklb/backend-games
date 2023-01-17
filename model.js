@@ -10,9 +10,8 @@ fetchCategories = () => {
 };
 
 fetchReviews = () => {
-  let date = convertTimestampToDate({ created_at: 1610964101251 });
-  console.log(date);
-
+  //   let date = convertTimestampToDate({ created_at: 1610964101251 });
+  //   console.log(date);
   return db.query(`SELECT * FROM reviews`);
 };
 
