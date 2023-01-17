@@ -2,7 +2,7 @@ const seed = require("../db/seeds/seed");
 const testData = require("../db/data/test-data");
 const request = require("supertest");
 const app = require("../app");
-const db = require('../db/connection')
+const db = require("../db/connection");
 
 beforeEach(() => seed(testData));
 
@@ -19,6 +19,23 @@ describe("/api/categories", () => {
           expect(category).toHaveProperty("slug");
           expect(category).toHaveProperty("description");
         });
+      });
+  });
+});
+
+describe("/api/reviews/:review_id", () => {
+  it("responds with a status code of 200", () => {
+    return request(app).get("/api/reviews/3").expect(200);
+  });
+  it("responds with the review object specified in the params", () => {
+    return request(app)
+      .get("/api/reviews/3")
+      .expect(200)
+      .then((response) => {
+        const review_object = response.body.rows[0]
+        console.log(review_object);
+        expect(review_object.review_id).toBe(3);
+        expect(review_object.title).toBe('Ultimate Werewolf')
       });
   });
 });
