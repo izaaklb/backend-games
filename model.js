@@ -1,7 +1,19 @@
-const db = require("./db/connection")
+const db = require("./db/connection");
+const {
+  convertTimestampToDate,
+  createRef,
+  formatComments,
+} = require("./db/seeds/utils");
 
 fetchCategories = () => {
-return db.query(`SELECT * FROM categories;`)
-}
+  return db.query(`SELECT * FROM categories;`);
+};
 
-module.exports = { fetchCategories }
+fetchReviews = () => {
+  let date = convertTimestampToDate({ created_at: 1610964101251 });
+  console.log(date);
+
+  return db.query(`SELECT * FROM reviews`);
+};
+
+module.exports = { fetchCategories, fetchReviews };
