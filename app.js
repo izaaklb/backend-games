@@ -3,7 +3,7 @@ const app = express();
 const { getCategories } = require("./controller");
 
 app.get("/api/categories", getCategories);
-app.get("/api/reviews", getReviews)
+app.get("/api/reviews", getReviews);
 
 app.use((err, req, res, next) => {
   if (err.status) {
