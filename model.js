@@ -12,4 +12,13 @@ fetchReviews = () => {
   ORDER BY created_at DESC;`);
 };
 
-module.exports = { fetchCategories, fetchReviews };
+fetchReview = (id) => {
+  const id_number = id.review_id;
+  return db.query(`SELECT * FROM reviews WHERE review_id = ${id_number}`)
+  .then((review) => {
+    return review.rows[0]
+  })
+};
+
+module.exports = { fetchCategories, fetchReviews, fetchReview };
+
