@@ -32,10 +32,8 @@ describe("/api/reviews/:review_id", () => {
       .get("/api/reviews/3")
       .expect(200)
       .then((response) => {
-        const review_object = response.body.rows[0]
-        console.log(review_object);
-        expect(review_object.review_id).toBe(3);
-        expect(review_object.title).toBe('Ultimate Werewolf')
+        expect(response.body.review_id).toBe(3);
+        expect(response.body.title).toBe("Ultimate Werewolf");
       });
   });
 });

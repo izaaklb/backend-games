@@ -10,10 +10,9 @@ getCategories = (request, response, next) => {
 
 getReview = (request, response, next) => {
   const id = request.params;
-  const id_number = id.review_id;
-  fetchReview(id_number)
-    .then((review) => {
-      response.status(200).send(review);
+  fetchReview(id)
+    .then((review_object) => {
+      response.status(200).send(review_object);
     })
     .catch(next);
 };
