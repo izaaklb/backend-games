@@ -1,9 +1,17 @@
-const { fetchCategories, fetchReview } = require("./model");
+const { fetchCategories, fetchReviews, fetchReview } = require("./model");
 
 getCategories = (request, response, next) => {
   fetchCategories()
     .then((categories) => {
       response.status(200).send(categories);
+    })
+    .catch(next);
+};
+
+getReviews = (request, response, next) => {
+  fetchReviews()
+    .then((reviews) => {
+      response.status(200).send(reviews);
     })
     .catch(next);
 };
@@ -17,4 +25,8 @@ getReview = (request, response, next) => {
     .catch(next);
 };
 
-module.exports = { getCategories, getReview };
+
+
+
+module.exports = { getCategories, getReviews, getReview };
+

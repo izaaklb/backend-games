@@ -1,10 +1,11 @@
 const express = require("express");
 const app = express();
-const { getCategories, getReview } = require("./controller");
+const { getCategories, getReviews, getReview} = require("./controller");
 
-app.get("/api/categories", getCategories);
-
+app.get("/api/categories", getCategories)
+app.get("/api/reviews", getReviews);
 app.get("/api/reviews/:review_id", getReview);
+
 
 app.use((err, req, res, next) => {
   if (err.status) {
@@ -21,6 +22,8 @@ app.use((err, req, res, next) => {
 
 app.use((err, req, res, next) => {
   res.status(500).send(err);
+  console.log(err);
+  res.status(500).send("Server Error!");
 });
 
 module.exports = app;
