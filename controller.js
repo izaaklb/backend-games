@@ -29,7 +29,8 @@ getCommentsByReviewId = (request, response, next) => {
   const id = request.params;
   fetchCommentsByReviewId(id).then((comments) => {
     response.status(200).send(comments);
-  });
+  })
+  .catch(next);
 };
 
 module.exports = {

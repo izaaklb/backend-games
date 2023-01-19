@@ -23,9 +23,13 @@ fetchReviews = () => {
 fetchReviewById = (id) => {
   const id_number = id.review_id;
   return db
-    .query(`SELECT * FROM reviews WHERE review_id = ${id_number}`)
-    .then((review) => {
-      return review.rows[0];
+    .query(`SELECT * FROM reviews WHERE review_id = $1`, [id_number])
+    .then(({ rows }) => {
+      const user = rows[0];
+      if (!user) {
+        return Promise.reject({ status: 404, msg: "review does not exist" });
+      }
+      return user;
     });
 };
 
@@ -33,11 +37,24 @@ fetchCommentsByReviewId = (id) => {
   const id_number = id.review_id;
   return db
     .query(
-      `SELECT * FROM comments WHERE review_id = ${id_number}
-    ORDER BY created_at DESC;`
+      `SELECT * FROM comments WHERE review_id = $1
+    ORDER BY created_at DESC;`,
+      [id_number]
     )
-    .then((comments) => {
-      return comments.rows;
+    .then(({ rows }) => {
+      if (rows.length === 0) {
+        return db
+          .query(`SELECT * FROM reviews WHERE review_id = $1`, [id_number])
+          .then(({ rows }) => {
+            if (rows.length === 0) {
+              return Promise.reject({
+                status: 404,
+                msg: "review does not exist",
+              });
+            } return [];
+          });
+      }
+      return rows;
     });
 };
 
