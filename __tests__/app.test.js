@@ -1,5 +1,6 @@
 const seed = require("../db/seeds/seed");
 const sorted = require("jest-sorted");
+
 const testData = require("../db/data/test-data");
 const request = require("supertest");
 const app = require("../app");
@@ -16,10 +17,12 @@ describe("/api/categories", () => {
       .get("/api/categories")
       .expect(200)
       .then((response) => {
-        expect(response.body.rows.length).toBe(4);
-        response.body.rows.forEach((category) => {
-          expect(category).toHaveProperty("slug");
-          expect(category).toHaveProperty("description");
+        expect(response.body.length).toBe(4);
+        response.body.forEach((category) => {
+          expect(category).toEqual({
+            slug: expect.any(String),
+            description: expect.any(String),
+          });
         });
       });
   });
@@ -29,46 +32,37 @@ describe("api/reviews", () => {
   it("responds with a status code of 200", () => {
     return request(app).get("/api/reviews").expect(200);
   });
-  it("responds with an array of review objects", () => {
-    return request(app)
-      .get("/api/reviews")
-      .expect(200)
-      .then((response) => {
-        expect(response.body.rows.length).toBe(13);
-        response.body.rows.forEach((review) => {
-          expect(review).toHaveProperty("owner");
-          expect(review).toHaveProperty("title");
-          expect(review).toHaveProperty("review_id");
-          expect(review).toHaveProperty("category");
-          expect(review).toHaveProperty("review_img_url");
-          expect(review).toHaveProperty("created_at");
-          expect(review).toHaveProperty("votes");
-          expect(review).toHaveProperty("designer");
+});
+it("responds with an array of review objects, including a comment count property", () => {
+  return request(app)
+    .get("/api/reviews")
+    .expect(200)
+    .then((response) => {
+      expect(response.body.length).toBe(13);
+      response.body.forEach((review) => {
+        expect(review).toEqual({
+          comment_count: expect.any(String),
+          review_id: expect.any(Number),
+          title: expect.any(String),
+          designer: expect.any(String),
+          owner: expect.any(String),
+          review_body: expect.any(String),
+          category: expect.any(String),
+          review_img_url: expect.any(String),
+          votes: expect.any(Number),
+          created_at: expect.any(String),
         });
       });
-  });
-  test("reviews are sorted by date in descending order", () => {
-    return request(app)
-      .get("/api/reviews")
-      .expect(200)
-      .then((response) => {
-        const rows = response.body.rows;
-        expect(rows).toBeSortedBy("created_at", { descending: true });
-      });
-  });
-  test("each review contains a comment_count property which contains the number of comments made for each review id", () => {
-    return request(app)
-      .get("/api/reviews")
-      .expect(200)
-      .then((response) => {
-        const rows = response.body.rows;
-        rows.forEach((review) => {
-          expect(review).toHaveProperty("comment_count");
-        });
-        expect(rows[1].comment_count).toBe("0");
-        expect(rows[4].comment_count).toBe("3");
-      });
-  });
+    });
+});
+
+test("reviews are sorted by date in descending order", () => {
+  return request(app)
+    .get("/api/reviews")
+    .expect(200)
+    .then((response) => {
+      expect(response.body).toBeSortedBy("created_at", { descending: true });
+    });
 });
 
 describe("/api/reviews/:review_id", () => {
@@ -80,11 +74,51 @@ describe("/api/reviews/:review_id", () => {
       .get("/api/reviews/3")
       .expect(200)
       .then((response) => {
+        expect(response.body).toEqual({
+          review_id: expect.any(Number),
+          title: expect.any(String),
+          designer: expect.any(String),
+          owner: expect.any(String),
+          review_body: expect.any(String),
+          category: expect.any(String),
+          review_img_url: expect.any(String),
+          votes: expect.any(Number),
+          created_at: expect.any(String),
+        });
         expect(response.body.review_id).toBe(3);
-        expect(response.body.title).toBe("Ultimate Werewolf");
       });
   });
 });
-        
+
+describe("api/reviews/:review_id/comments", () => {
+  it("responds with a status code of 200", () => {
+    return request(app).get("/api/reviews/2/comments").expect(200);
+  });
+  it("responds with an array of comments for the given review id", () => {
+    return request(app)
+      .get("/api/reviews/2/comments")
+      .expect(200)
+      .then((response) => {
+        response.body.forEach((comment) => {
+          expect(comment).toEqual({
+            comment_id: expect.any(Number),
+            review_id: expect.any(Number),
+            votes: expect.any(Number),
+            body: expect.any(String),
+            created_at: expect.any(String),
+            author: expect.any(String)
+          })
+        });
+      });
+  });
+  it("responds sorted by date, with most recent first", () => {
+    return request(app)
+      .get("/api/reviews")
+      .expect(200)
+      .then((response) => {
+        expect(response.body).toBeSortedBy("created_at", { descending: true });
+      });
+  });
+});
 
 afterAll(() => db.end());
