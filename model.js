@@ -81,10 +81,28 @@ insertComment = (review_id, newComment) => {
     });
 };
 
+incrementVotes = (reviewId, voteIncrement) => {
+  reviewIdNum = reviewId.review_id;
+  voteIncrementNum = voteIncrement.inc_votes;
+  return db
+    .query(
+      `UPDATE reviews SET votes = votes + $1 WHERE 
+  review_id = $2 RETURNING *`,
+      [voteIncrementNum, reviewIdNum]
+    )
+    .then((response) => {
+      if (!response.rows[0]) {
+        return Promise.reject({ status: 404, msg: "review does not exist" });
+      }
+      return response.rows[0];
+    });
+};
+
 module.exports = {
   fetchCategories,
   fetchReviews,
   fetchReviewById,
   fetchCommentsByReviewId,
   insertComment,
+  incrementVotes,
 };
