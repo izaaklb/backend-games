@@ -94,6 +94,7 @@ incrementVotes = (reviewId, voteIncrement) => {
       if (!response.rows[0]) {
         return Promise.reject({ status: 404, msg: "review does not exist" });
       }
+      //hello
       return response.rows[0];
     });
 };
