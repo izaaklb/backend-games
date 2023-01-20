@@ -4,7 +4,7 @@ const {
   fetchReviewById,
   fetchCommentsByReviewId,
   insertComment,
-  incrementVotes
+  incrementVotes,
 } = require("./model");
 
 getCategories = (request, response, next) => {
@@ -51,7 +51,6 @@ postComment = (request, response, next) => {
     .catch(next);
 };
 
-
 patchVotes = (request, response, next) => {
   const reviewId = request.params;
   const voteIncrement = request.body;
@@ -62,12 +61,11 @@ patchVotes = (request, response, next) => {
     .catch(next);
 };
 
-
 module.exports = {
   getCategories,
   getReviews,
   getReviewById,
   getCommentsByReviewId,
   postComment,
-  patchVotes
+  patchVotes,
 };
