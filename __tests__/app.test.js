@@ -278,4 +278,25 @@ describe("api/reviews/:review_id", () => {
   });
 });
 
+describe("/api/users", () => {
+  it("responds with status 200", () => {
+    return request(app).get("/api/users").expect(200);
+  });
+  it("responds with an array of user objects", () => {
+    return request(app)
+      .get("/api/users")
+      .expect(200)
+      .then((users) => {
+        expect(users.body.length).toBe(4);
+        users.body.forEach((user) => {
+          expect(user).toEqual({
+            username: expect.any(String),
+            name: expect.any(String),
+            avatar_url: expect.any(String),
+          });
+        });
+      });
+  });
+});
+
 afterAll(() => db.end());
