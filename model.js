@@ -51,10 +51,33 @@ fetchCommentsByReviewId = (id) => {
                 status: 404,
                 msg: "review does not exist",
               });
-            } return [];
+            }
+            return [];
           });
       }
       return rows;
+    });
+};
+
+insertComment = (review_id, newComment) => {
+  const reviewIdNum = review_id.review_id;
+  const { body, username } = newComment;
+
+  return db
+    .query(`SELECT * FROM reviews WHERE review_id = $1;`, [reviewIdNum])
+    .then((response) => {
+      if (response.rows.length === 0) {
+        return Promise.reject({ status: 404, msg: "review does not exist" });
+      }
+      return db
+        .query(
+          `INSERT INTO comments (body, review_id, author) VALUES ($1, $2, $3) 
+  RETURNING *;`,
+          [body, reviewIdNum, username]
+        )
+        .then((response) => {
+          return response.rows[0];
+        });
     });
 };
 
@@ -63,4 +86,5 @@ module.exports = {
   fetchReviews,
   fetchReviewById,
   fetchCommentsByReviewId,
+  insertComment,
 };
