@@ -60,7 +60,7 @@ patchVotes = (request, response, next) => {
     })
     .catch(next);
 };
-//hello
+
 
 module.exports = {
   getCategories,
