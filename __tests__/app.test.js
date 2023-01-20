@@ -1,6 +1,5 @@
 const seed = require("../db/seeds/seed");
 const sorted = require("jest-sorted");
-
 const testData = require("../db/data/test-data");
 const request = require("supertest");
 const app = require("../app");
@@ -155,6 +154,67 @@ describe("api/reviews/:review_id/comments", () => {
   it("responds with a status code of 400 when review query is invalid", () => {
     return request(app)
       .get("/api/reviews/hello/comments")
+      .expect(400)
+      .then(({ body }) => {
+        expect(body.msg).toBe("Invalid input");
+      });
+  });
+});
+
+describe("api/reviews/:review_id/comments", () => {
+  it("responds with the posted comment, status code 201", () => {
+    const newComment = {
+      username: "mallionaire",
+      body: "occaecat saved my life",
+    };
+    return request(app)
+      .post("/api/reviews/6/comments")
+      .send(newComment)
+      .expect(201)
+      .then((response) => {
+        expect(response.body).toEqual({
+          comment_id: expect.any(Number),
+          body: expect.any(String),
+          votes: expect.any(Number),
+          author: expect.any(String),
+          review_id: expect.any(Number),
+          created_at: expect.any(String),
+        });
+      });
+  });
+  it("responds with status 404 if review does not exist", () => {
+    const newComment = {
+      username: "mallionaire",
+      body: "occaecat saved my life",
+    };
+    return request(app)
+      .post("/api/reviews/500/comments")
+      .send(newComment)
+      .expect(404)
+      .then(({ body }) => {
+        expect(body.msg).toBe("review does not exist");
+      });
+  });
+  it("responds with status 400 when body is malformed", () => {
+    const newComment = {
+      hi: "helloooo",
+    };
+    return request(app)
+      .post("/api/reviews/6/comments")
+      .send(newComment)
+      .expect(400)
+      .then(({ body }) => {
+        expect(body.msg).toBe("Invalid input");
+      });
+  });
+  it("responds with status 400 when body values are wrong type", () => {
+    const newComment = {
+      username: 424325252,
+      body: true,
+    };
+    return request(app)
+      .post("/api/reviews/5/comments")
+      .send(newComment)
       .expect(400)
       .then(({ body }) => {
         expect(body.msg).toBe("Invalid input");
