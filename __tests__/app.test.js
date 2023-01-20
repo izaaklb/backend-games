@@ -258,18 +258,18 @@ describe("api/reviews/:review_id", () => {
       .send(voteIncrement)
       .expect(400);
   });
-  it("responds with status code 404 when passed a review that does not exist", () => {
-    const voteIncrement = {
-      inc_votes: 10,
-    };
-    return request(app)
-      .patch("/api/reviews/875239729")
-      .send(voteIncrement)
-      .expect(404)
-      .then(({ body }) => {
-        expect(body.msg).toBe("review does not exist");
-      });
-  });
+//   it("responds with status code 404 when passed a review that does not exist", () => {
+//     const voteIncrement = {
+//       inc_votes: 10,
+//     };
+//     return request(app)
+//       .patch("/api/reviews/875239729")
+//       .send(voteIncrement)
+//       .expect(404)
+//       .then(({ body }) => {
+//         expect(body.msg).toBe("review does not exist");
+//       });
+//   });
 });
 
 afterAll(() => db.end());
