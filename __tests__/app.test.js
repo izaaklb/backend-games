@@ -278,5 +278,4 @@ describe("api/reviews/:review_id", () => {
   });
 });
 
-
 afterAll(() => db.end());
