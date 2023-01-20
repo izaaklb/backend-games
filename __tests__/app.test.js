@@ -249,6 +249,12 @@ describe("api/reviews/:review_id", () => {
     };
     return request(app).patch("/api/reviews/2").send(voteIncrement).expect(400);
   });
+  it("responds with status code 400 when passed an invalid body with string property", () => {
+    const voteIncrement = {
+      inc_votes: "hello",
+    };
+    return request(app).patch("/api/reviews/2").send(voteIncrement).expect(400);
+  });
   it("responds with status code 400 when passed an invalid query", () => {
     const voteIncrement = {
       inc_votes: 10,
