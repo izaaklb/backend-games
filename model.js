@@ -98,6 +98,12 @@ incrementVotes = (reviewId, voteIncrement) => {
     });
 };
 
+fetchUsers = () => {
+  return db.query(`SELECT * FROM USERS;`).then((users) => {
+    return users.rows;
+  });
+};
+
 module.exports = {
   fetchCategories,
   fetchReviews,
@@ -105,4 +111,5 @@ module.exports = {
   fetchCommentsByReviewId,
   insertComment,
   incrementVotes,
+  fetchUsers,
 };
