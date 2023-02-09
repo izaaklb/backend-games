@@ -1,3 +1,4 @@
+const { response } = require("express");
 const db = require("./db/connection");
 
 fetchCategories = () => {
@@ -104,6 +105,22 @@ fetchUsers = () => {
   });
 };
 
+incrementCommentVotes = (commentId, voteIncrement)  => {
+  CommentIdNum = commentId.comment_id;
+  voteIncrementNum = voteIncrement.inc_votes;
+  return db
+    .query(
+      `UPDATE comments SET votes = votes + $1 WHERE 
+  comment_id = $2 RETURNING *`,
+      [voteIncrementNum, CommentIdNum]
+    ).then((response) => {
+      if (!response.rows[0]) {
+        return Promise.reject({ status: 404, msg: "review does not exist" });
+      }
+      return response.rows[0];
+    })
+}
+
 module.exports = {
   fetchCategories,
   fetchReviews,
@@ -112,4 +129,5 @@ module.exports = {
   insertComment,
   incrementVotes,
   fetchUsers,
+  incrementCommentVotes
 };

@@ -8,7 +8,9 @@ const {
   getReviewById,
   getCommentsByReviewId,
   postComment,
-  getUsers
+  patchVotes,
+  getUsers,
+  patchCommentVotes
 } = require("./controller");
 app.use(express.json());
 
@@ -19,6 +21,7 @@ app.get("/api/reviews/:review_id/comments", getCommentsByReviewId);
 app.post("/api/reviews/:review_id/comments", postComment);
 app.patch("/api/reviews/:review_id", patchVotes);
 app.get("/api/users", getUsers)
+app.patch("/api/comments/:comment_id", patchCommentVotes)
 
 
 //custom error

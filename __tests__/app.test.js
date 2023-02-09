@@ -299,4 +299,58 @@ describe("/api/users", () => {
   });
 });
 
+describe("api/comments/:comment_id", () => {
+  it("responds with updated comment and a status code of 202", () => {
+    return request(app)
+      .patch("/api/comments/1")
+      .send({ inc_votes: 10 })
+      .expect(202)
+      .then((response) => {
+        expect(response.body.votes).toBe(26);
+        expect(response.body).toEqual({
+          comment_id: expect.any(Number),
+          body: expect.any(String),
+          review_id: expect.any(Number),
+          author: expect.any(String),
+          votes: expect.any(Number),
+          created_at: expect.any(String),
+        });
+      });
+  });
+  it("responds with status code 400 when passed an invalid body", () => {
+    const voteIncrement = {
+      wrong: 10,
+    };
+    return request(app).patch("/api/comments/2").send(voteIncrement).expect(400);
+  });
+  it("responds with status code 400 when passed an invalid body with string property", () => {
+    const voteIncrement = {
+      inc_votes: "hello",
+    };
+    return request(app).patch("/api/comments/2").send(voteIncrement).expect(400);
+  });
+  it("responds with status code 400 when passed an invalid query", () => {
+    const voteIncrement = {
+      inc_votes: 10,
+    };
+    return request(app)
+      .patch("/api/comments/wrong")
+      .send(voteIncrement)
+      .expect(400);
+  });
+  it("responds with status code 404 when passed a review that does not exist", () => {
+    const voteIncrement = {
+      inc_votes: 10,
+    };
+    return request(app)
+      .patch("/api/comments/875239729")
+      .send(voteIncrement)
+      .expect(404)
+      .then(({ body }) => {
+        expect(body.msg).toBe("review does not exist");
+      });
+  });
+});
+
+
 afterAll(() => db.end());
