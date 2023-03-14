@@ -1,4 +1,3 @@
-const { response } = require("express");
 const db = require("./db/connection");
 
 fetchCategories = () => {
@@ -7,15 +6,20 @@ fetchCategories = () => {
   });
 };
 
-fetchReviews = () => {
-  return db
-    .query(
-      `SELECT reviews.*, COUNT(comments.review_id) AS comment_count
-  FROM comments 
-  FULL OUTER JOIN reviews ON reviews.review_id = comments.review_id
-  GROUP BY reviews.review_id
-  ORDER BY created_at DESC;`
-    )
+fetchReviews = (category, sort_by = 'created_at', order = 'DESC') => {
+  let sqlQuery = `SELECT reviews.*, 
+  COUNT(comments.review_id) AS comment_count
+  FROM reviews 
+  FULL OUTER JOIN comments ON reviews.review_id = comments.review_id`
+  const queryValues = []
+
+  if(category !== undefined) {
+    queryValues.push(category);
+    sqlQuery += ` WHERE reviews.category = $1`
+  }
+    sqlQuery += ` GROUP BY reviews.review_id ORDER BY ${sort_by} ${order}; `
+    
+    return db.query(sqlQuery, queryValues)
     .then((reviews) => {
       return reviews.rows;
     });

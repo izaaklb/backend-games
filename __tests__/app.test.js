@@ -352,5 +352,46 @@ describe("api/comments/:comment_id", () => {
   });
 });
 
+describe("api/reviews/?queries", () => {
+  it("responds with the category specified in the query", () => {
+    return request(app)
+    .get("/api/reviews?category=dexterity")
+    .expect(200)
+    .then(({body}) => {
+      body.forEach((review) => {
+        expect(review.category).toBe("dexterity")
+        });
+      });
+    });
+    it("is sorted by the value specified in the query", () => {
+      return request(app)
+    .get("/api/reviews?sort_by=votes")
+    .expect(200)
+    .then(({body}) => {
+      expect(body).toBeSortedBy("votes", {descending: true})
+    })
+    })
+    it("can be sorted in ascending or descending order", () => {
+      return request(app)
+      .get("/api/reviews?order=asc")
+      .expect(200)
+      .then(({body}) => {
+        expect(body).toBeSortedBy("created_at", {ascending: true})
+      })    
+    })
+    it("can handle multiple queries", () => {
+      return request(app)
+      .get("/api/reviews?order=asc&category=social+deduction&sort_by=comment_count")
+      .expect(200)
+      .then(({body}) => {
+        expect(body).toBeSortedBy("comment_count", {ascending: true})
+        body.forEach((review) => {
+          expect(review.category).toBe("social deduction")
+        })
+      })
+    })
+  });
+
+
 
 afterAll(() => db.end());
